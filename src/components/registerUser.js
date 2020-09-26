@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import axios from "axios";
 import Input from "./input";
-import Joi from "joi";
+import Joi from "joi-browser";
 
 class RegisterUser extends Component {
   state = {
@@ -15,13 +15,13 @@ class RegisterUser extends Component {
     errors: {},
   };
 
-  schema = Joi.object({
+  schema = {
     name: Joi.string().max(100).required(),
     username: Joi.string().min(6).max(50).required(),
-    email: Joi.string().required(),
+    email: Joi.string().email().required(),
     age: Joi.number().integer().min(16).required(),
     link: Joi.string(),
-  });
+  };
 
   endPoint = "https://jsonplaceholder.typicode.com/users";
 
@@ -39,24 +39,40 @@ class RegisterUser extends Component {
   };
 
   validate = () => {
-    const { error } = this.schema.validate(this.state.data);
+    const options = { abortEarly: false };
+    const { error } = Joi.validate(this.state.data, this.schema, options);
     if (!error) return null;
 
     const errors = {};
-    for (let i of error.details) errors[i.path[0]] = i.message;
+    for (let i of error.details) {
+      console.log(i.path[0]);
+      errors[i.path[0]] = i.message;
+    }
 
     return errors;
   };
 
   handleChange = ({ currentTarget: input }) => {
+    const errors = { ...this.state.errors };
+    const errorMessages = this.validateProperty(input);
+    if (errorMessages) errors[input.name] = errorMessages;
+    else delete errors[input.name];
+
     const data = { ...this.state.data };
     data[input.name] = input.value;
     // update the state.
-    this.setState({ data });
+    this.setState({ data, errors });
+  };
+
+  validateProperty = ({ name, value }) => {
+    const obj = { [name]: value };
+    const schema = { [name]: this.schema[name] };
+    const { error } = Joi.validate(obj, schema);
+    return error ? error.details[0].message : null;
   };
 
   render() {
-    const { data } = this.state;
+    const { data, errors } = this.state;
     return (
       <form onSubmit={this.handleSubmit}>
         <Input
@@ -64,30 +80,35 @@ class RegisterUser extends Component {
           label="Name"
           value={data.name}
           onChange={this.handleChange}
+          error={errors["name"]}
         />
         <Input
           name="username"
           label="Username"
           value={data.username}
           onChange={this.handleChange}
+          error={errors["username"]}
         />
         <Input
           name="email"
           label="Email"
           value={data.email}
           onChange={this.handleChange}
+          error={errors["email"]}
         />
         <Input
           name="age"
           label="Age"
           value={data.age}
           onChange={this.handleChange}
+          error={errors["age"]}
         />
         <Input
           name="link"
           label="Link"
           value={data.link}
           onChange={this.handleChange}
+          error={errors["link"]}
         />
         <button type="submit" className="btn btn-outline-info">
           Enviar
