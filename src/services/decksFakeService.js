@@ -1,3 +1,5 @@
+import _ from "lodash";
+
 export function getDecks() {
   return [
     {
@@ -448,7 +450,7 @@ export function getDecks() {
 }
 
 // Group decks by type
-function groupDecksByType(decks = [], type) {
+export function groupDecksByType(decks = [], type) {
   return decks.reduce((acum, current) => {
     const { suit, value } = current;
 
@@ -461,12 +463,17 @@ function groupDecksByType(decks = [], type) {
 
 export function countCompleteDecks(decks, categories) {
   let array = [];
-  for (let item of categories) {
-    const groupedDescks = groupDecksByType(decks, item);
-    for (let j in groupedDescks) {
-      if (Object.keys(groupedDescks).length !== 13) return 0;
-      else array.push(groupedDescks[j]);
+  let count = 0;
+  if (decks.length && categories.length) {
+    for (let item of categories) {
+      const groupedDescks = groupDecksByType(decks, item);
+      if (!_.isEmpty(groupedDescks)) count++;
+      for (let j in groupedDescks) {
+        if (Object.keys(groupedDescks).length !== 13) return 0;
+        else array.push(groupedDescks[j]);
+      }
     }
+    if (count === 4) return Math.min.apply(null, array);
   }
-  return Math.min.apply(null, array);
+  return 0;
 }
