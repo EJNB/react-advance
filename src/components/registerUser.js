@@ -16,10 +16,10 @@ class RegisterUser extends Component {
   };
 
   schema = {
-    name: Joi.string().max(100).required(),
-    username: Joi.string().min(6).max(50).required(),
-    email: Joi.string().email().required(),
-    age: Joi.number().integer().min(16).required(),
+    name: Joi.string().required().min(6).max(100).label("Name"),
+    username: Joi.string().required().min(6).max(50).label("Username"),
+    email: Joi.string().required().email().label("Email"),
+    age: Joi.number().required().integer().min(16).label("Age"),
     link: Joi.string(),
   };
 
@@ -45,7 +45,7 @@ class RegisterUser extends Component {
 
     const errors = {};
     for (let i of error.details) {
-      console.log(i.path[0]);
+      // console.log(i.path[0]);
       errors[i.path[0]] = i.message;
     }
 
@@ -76,6 +76,7 @@ class RegisterUser extends Component {
     return (
       <form onSubmit={this.handleSubmit}>
         <Input
+          id="name"
           name="name"
           label="Name"
           value={data.name}
@@ -83,6 +84,7 @@ class RegisterUser extends Component {
           error={errors["name"]}
         />
         <Input
+          id="username"
           name="username"
           label="Username"
           value={data.username}
@@ -90,22 +92,28 @@ class RegisterUser extends Component {
           error={errors["username"]}
         />
         <Input
+          id="email"
           name="email"
+          type="email"
           label="Email"
           value={data.email}
           onChange={this.handleChange}
           error={errors["email"]}
         />
         <Input
+          id="age"
           name="age"
           label="Age"
+          type="number"
           value={data.age}
           onChange={this.handleChange}
           error={errors["age"]}
         />
         <Input
+          id="link"
           name="link"
           label="Link"
+          type="url"
           value={data.link}
           onChange={this.handleChange}
           error={errors["link"]}

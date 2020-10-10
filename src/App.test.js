@@ -1,9 +1,10 @@
-import React from 'react';
-import { render } from '@testing-library/react';
-import App from './App';
+import React from "react";
+import { render } from "@testing-library/react";
+import App from "./App";
 
-test('renders learn react link', () => {
-  const { getByText } = render(<App />);
-  const linkElement = getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+test("Render a form", () => {
+  render(<App />);
+  const form = document.querySelector("form");
+  expect(form).not.toBeNull();
+  expect(form).toBeInTheDocument();
 });
